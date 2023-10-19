@@ -69,6 +69,40 @@ $('.permbutton').click( function( e ) {
     emitter.dispatchEvent(new CustomEvent('userEvent', { detail: new ClickEntry(ActionEnum.CLICK, (e.clientX + window.pageXOffset), (e.clientY + window.pageYOffset), e.target.id,new Date().getTime()) }))
 });
 
-
 // ---- Assign unique ids to everything that doesn't have an ID ----
 $('#html-loc').find('*').uniqueId() 
+
+const filePath = "/C/presentation_documents/important_file.txt";
+
+let effective_permissions = define_new_effective_permissions("effective_perm", add_info_column = true, which_permissions = null);
+$('#sidepanel').append(effective_permissions);
+$('#effective_perm').attr('username', 'administrator');
+$('#effective_perm').attr('filepath', filePath);
+
+let user_select_for_perm = define_new_user_select_field("user_select_perm", "Select User", function(selected_user) { 
+    $('#effective_perm').attr('username', selected_user);
+});
+$('#sidepanel').append(user_select_for_perm);
+
+let dialog = define_new_dialog('permission-dialog', 'Permission Information', {});
+$('.fa-info-circle').click(function(){
+    const file_path = $('#effective_perm').attr('filepath');
+    const username = $('#effective_perm').attr('username');
+    const permissionName = $(this).attr('permission_name'); // Replace with the correct attribute name
+    const fileObject = path_to_file[file_path];
+    const userObject = all_users[username];
+    const explanation = allow_user_action(fileObject, userObject, permissionName, true);
+    
+    const explanationText = get_explanation_text(explanation);
+    const currentDialog = dialog.dialog({
+        modal: true,
+        buttons: {
+            Ok: function() {
+                $(this).dialog("close");
+            }
+        }
+    });
+    currentDialog.text(explanationText);
+    currentDialog.dialog('open');
+});
+
